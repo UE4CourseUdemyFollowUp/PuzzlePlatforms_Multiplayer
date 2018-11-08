@@ -23,13 +23,13 @@ public:
 	void LoadMenu();
 
 	UFUNCTION(Exec)
-	void Host();
+	void HostServer() override;
 
 	UFUNCTION(Exec)
-	void Join(const FString& Address);
+	void JoinGame(const FString& Address) override;
 
 private:
-	TSubclassOf<class UUserWidget> MainMenu;
+	TSubclassOf<class UUserWidget> MenuClass;
 	
-	
+	class UMainMenu* Menu;
 };

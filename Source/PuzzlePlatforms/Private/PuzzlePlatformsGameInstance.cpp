@@ -5,6 +5,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "PlatformTrigger.h"
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
+#include "MenuSystem/MainMenu.h"
 
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
@@ -14,7 +15,7 @@ UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitiali
 	if (!ensure(MainMenuBPClass.Class != nullptr))
 		return;
 
-	MainMenu = MainMenuBPClass.Class;
+	MenuClass = MainMenuBPClass.Class;
 	UE_LOG(LogTemp, Warning, TEXT("Found class %s"), *MainMenuBPClass.Class->GetName());
 }
 
@@ -26,34 +27,35 @@ void UPuzzlePlatformsGameInstance::Init()
 
 void UPuzzlePlatformsGameInstance::LoadMenu()
 {
-	if (!ensure(MainMenu != nullptr))
+	if (!ensure(MenuClass != nullptr))
 		return;
 
-	UUserWidget* Menu = CreateWidget<UUserWidget>(this, MainMenu);
+	Menu = CreateWidget<UMainMenu>(this, MenuClass);
 
 	if (!ensure(Menu != nullptr))
 		return;
+	//Menu->AddToViewport();
 
-	APlayerController* PlayerController = GetFirstLocalPlayerController();
+	//APlayerController* PlayerController = GetFirstLocalPlayerController();
+	//if (!ensure(PlayerController != nullptr)) return;
 
-	if (!ensure(PlayerController))
-		return;
-
-	Menu->SetMenuInterface(this);
-
-	Menu->AddToViewport();
-
-	FInputModeUIOnly InputModeData;
-	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	/*FInputModeUIOnly InputModeData;
 	InputModeData.SetWidgetToFocus(Menu->TakeWidget());
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 
 	PlayerController->SetInputMode(InputModeData);
 
 	PlayerController->bShowMouseCursor = true;
+
+	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));*/
+	Menu->Setup();
+	Menu->SetMenuInterface(this);
+	
 }
 
-void UPuzzlePlatformsGameInstance::Host()
+void UPuzzlePlatformsGameInstance::HostServer()
 {
+	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
 	UEngine* Engine = GetEngine();
 	if (!ensure(Engine))
 		return;
@@ -65,10 +67,12 @@ void UPuzzlePlatformsGameInstance::Host()
 	if (!ensure(World))
 		return;
 
+	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
+
 	World->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
 }
 
-void UPuzzlePlatformsGameInstance::Join(const FString & Address)
+void UPuzzlePlatformsGameInstance::JoinGame(const FString& Address)
 {
 	UEngine* Engine = GetEngine();
 	if (!ensure(Engine))

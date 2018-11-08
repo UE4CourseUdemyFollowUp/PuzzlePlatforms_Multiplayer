@@ -20,6 +20,8 @@ public:
 	void SetMenuInterface(IMenuInterface* Interface);
 	IMenuInterface* getMenuInterface() const;
 
+	void Setup();
+
 protected:
 	virtual bool Initialize() override;
 

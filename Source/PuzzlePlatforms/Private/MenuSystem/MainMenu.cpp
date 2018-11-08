@@ -3,6 +3,7 @@
 #include "MainMenu.h"
 #include "MenuInterface.h"
 #include "Components/Button.h"
+#include "Engine/World.h"
 
 
 bool UMainMenu::Initialize()
@@ -33,13 +34,33 @@ bool UMainMenu::Initialize()
 
 void UMainMenu::SetMenuInterface(IMenuInterface* Interface)
 {
-	if (!ensure(Interface != nullptr))
-		MenuInterface = Interface;
+	if (Interface == nullptr)
+		return;
+
+	MenuInterface = Interface;
 }
 
 IMenuInterface* UMainMenu::getMenuInterface() const
 {
 	return MenuInterface;
+}
+
+void UMainMenu::Setup()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+	if (!ensure(PlayerController))
+		return;
+
+	FInputModeUIOnly InputModeData;
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	InputModeData.SetWidgetToFocus(this->TakeWidget());
+
+	PlayerController->SetInputMode(InputModeData);
+
+	PlayerController->bShowMouseCursor = true;
+
+	this->AddToViewport();
 }
 
 void UMainMenu::JoinGame()
