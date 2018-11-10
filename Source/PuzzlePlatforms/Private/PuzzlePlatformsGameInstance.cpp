@@ -34,20 +34,7 @@ void UPuzzlePlatformsGameInstance::LoadMenu()
 
 	if (!ensure(Menu != nullptr))
 		return;
-	//Menu->AddToViewport();
 
-	//APlayerController* PlayerController = GetFirstLocalPlayerController();
-	//if (!ensure(PlayerController != nullptr)) return;
-
-	/*FInputModeUIOnly InputModeData;
-	InputModeData.SetWidgetToFocus(Menu->TakeWidget());
-	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-
-	PlayerController->SetInputMode(InputModeData);
-
-	PlayerController->bShowMouseCursor = true;
-
-	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));*/
 	Menu->Setup();
 	Menu->SetMenuInterface(this);
 	

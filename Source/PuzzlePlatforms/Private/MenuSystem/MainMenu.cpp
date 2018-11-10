@@ -32,6 +32,30 @@ bool UMainMenu::Initialize()
 	return true;
 }
 
+void UMainMenu::OnLevelRemovedFromWorld(ULevel * InLevel, UWorld * InWorld)
+{
+	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
+	Super::OnLevelRemovedFromWorld(InLevel, InWorld);
+
+	auto World = GetWorld();
+
+	if (!World)
+	{
+		return;
+	}
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
+
+	if (!ensure(PlayerController))
+		return;
+
+	FInputModeGameOnly InputModeData;
+	PlayerController->SetInputMode(InputModeData);
+
+
+	this->RemoveFromViewport();
+}
+
 void UMainMenu::SetMenuInterface(IMenuInterface* Interface)
 {
 	if (Interface == nullptr)
@@ -47,7 +71,14 @@ IMenuInterface* UMainMenu::getMenuInterface() const
 
 void UMainMenu::Setup()
 {
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	auto World = GetWorld();
+
+	if (!World)
+	{
+		return;
+	}
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
 
 	if (!ensure(PlayerController))
 		return;

@@ -25,6 +25,8 @@ public:
 protected:
 	virtual bool Initialize() override;
 
+	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
+
 private:
 	UFUNCTION()
 	void JoinGame();
