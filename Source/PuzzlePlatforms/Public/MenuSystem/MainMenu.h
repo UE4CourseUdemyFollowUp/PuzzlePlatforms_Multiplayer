@@ -29,10 +29,16 @@ protected:
 
 private:
 	UFUNCTION()
-	void JoinGame();
+	void OpenJoinGameMenu();
+
+	UFUNCTION()
+	void OpenMainMenu();
 
 	UFUNCTION()
 	void HostServer();
+
+	UFUNCTION()
+	void JoinServer();
 
 	UFUNCTION()
 	void ShowSettings();
@@ -44,13 +50,31 @@ private:
 	class UButton* Button_Host;
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* Button_Join;
+	class UButton* Button_JoinMenu;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Button_JoinGame;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Button_CanselJoinMenu;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Button_Settings;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Button_Exit;
+
+	UPROPERTY(meta = (BindWidget))
+	class UWidgetSwitcher* MenuSwitcher;
+
+	UPROPERTY(meta = (BindWidget))
+	class UWidget* JoinMenu;
+
+	UPROPERTY(meta = (BindWidget))
+	class UWidget* MainMenu;
+
+	UPROPERTY(meta = (BindWidget))
+	class UEditableTextBox* EditableTextBox_IPAddress;
 
 	IMenuInterface* MenuInterface;	
 };
