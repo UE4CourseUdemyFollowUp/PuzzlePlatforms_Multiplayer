@@ -6,17 +6,27 @@
 #include "PlatformTrigger.h"
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "MenuSystem/MainMenu.h"
+#include "MenuSystem/MenuWidget.h"
 
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<UUserWidget> MainMenuBPClass(TEXT("/Game/MenuSystem/BP_MainMenu"));
+	ConstructorHelpers::FClassFinder<UMainMenu> MainMenuBPClass(TEXT("/Game/MenuSystem/WBP_MainMenu"));
 
 	if (!ensure(MainMenuBPClass.Class != nullptr))
 		return;
 
 	MenuClass = MainMenuBPClass.Class;
+
+	ConstructorHelpers::FClassFinder<UUserWidget> IngameMenuBPClass(TEXT("/Game/MenuSystem/WBP_IngameMenu"));
+
+	if (!ensure(IngameMenuBPClass.Class != nullptr))
+		return;
+
+	IngameMenuClass = IngameMenuBPClass.Class;
+
 	UE_LOG(LogTemp, Warning, TEXT("Found class %s"), *MainMenuBPClass.Class->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("Found class %s"), *IngameMenuBPClass.Class->GetName());
 }
 
 void UPuzzlePlatformsGameInstance::Init()
@@ -30,14 +40,28 @@ void UPuzzlePlatformsGameInstance::LoadMenu()
 	if (!ensure(MenuClass != nullptr))
 		return;
 
-	Menu = CreateWidget<UMainMenu>(this, MenuClass);
+	MainMenu = CreateWidget<UMainMenu>(this, MenuClass);
 
-	if (!ensure(Menu != nullptr))
+	if (!ensure(MainMenu != nullptr))
 		return;
 
-	Menu->Setup();
-	Menu->SetMenuInterface(this);
+	MainMenu->Setup();
+	MainMenu->SetMenuInterface(this);
 	
+}
+
+void UPuzzlePlatformsGameInstance::LoadIngameMenu()
+{
+	if (!ensure(IngameMenuClass != nullptr))
+		return;
+
+	UMenuWidget* IngameMenu = CreateWidget<UMenuWidget>(this, IngameMenuClass);
+
+	if (!ensure(IngameMenu != nullptr))
+		return;
+
+	IngameMenu->Setup();
+	IngameMenu->SetMenuInterface(this);
 }
 
 void UPuzzlePlatformsGameInstance::HostServer()
