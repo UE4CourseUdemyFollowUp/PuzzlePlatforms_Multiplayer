@@ -61,7 +61,25 @@ void UMenuWidget::OnLevelRemovedFromWorld(ULevel * InLevel, UWorld * InWorld)
 
 	FInputModeGameOnly InputModeData;
 	PlayerController->SetInputMode(InputModeData);
+	PlayerController->bShowMouseCursor = false;
 
 
 	this->RemoveFromViewport();
+}
+
+void UMenuWidget::ExitGamePressed()
+{
+	auto World = GetWorld();
+
+	if (!World)
+	{
+		return;
+	}
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
+
+	if (PlayerController)
+	{
+		PlayerController->ConsoleCommand(FString("quit"));
+	}
 }

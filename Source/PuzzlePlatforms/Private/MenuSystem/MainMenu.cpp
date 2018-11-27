@@ -96,6 +96,7 @@ void UMainMenu::ShowSettings()
 void UMainMenu::ExitGame()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
+	ExitGamePressed();
 }
 
 

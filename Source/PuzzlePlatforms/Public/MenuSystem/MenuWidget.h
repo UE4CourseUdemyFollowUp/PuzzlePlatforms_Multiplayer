@@ -23,7 +23,9 @@ public:
 	void Setup();
 
 protected:
-	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;	
+	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
+
+	virtual void ExitGamePressed();
 
 	IMenuInterface* MenuInterface;
 };

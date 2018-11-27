@@ -16,6 +16,32 @@ class PUZZLEPLATFORMS_API UIngameMenu : public UMenuWidget
 	
 protected:
 	virtual bool Initialize() override;
+
+private:
+
+	UFUNCTION()
+	void ReturnToGame();
+
+	UFUNCTION()
+	void QuitToMenu();
+
+	UFUNCTION()
+	void OpenSettings();
+
+	UFUNCTION()
+	void ExitGame();
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Button_Return;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Button_Menu;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Button_Settings;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Button_Exit;
 	
 	
 };
