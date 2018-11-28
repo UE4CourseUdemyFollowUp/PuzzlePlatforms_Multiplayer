@@ -1,10 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PuzzlePlatformsGameInstance.h"
-#include <Runtime/Engine/Classes/Engine/Engine.h>
+#include "Engine/Engine.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Blueprint/UserWidget.h"
+#include "OnlineSubsystem.h"
+
 #include "PlatformTrigger.h"
-#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "MenuSystem/MainMenu.h"
 #include "MenuSystem/MenuWidget.h"
 
@@ -32,10 +34,25 @@ UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitiali
 void UPuzzlePlatformsGameInstance::Init()
 {
 	Super::Init();
-	UE_LOG(LogTemp, Warning, TEXT("GameInstance Init"));
+
+	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
+
+	if (Subsystem)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found subsystem interface: %s"), *Subsystem->GetSubsystemName().ToString());
+		IOnlineSessionPtr OnlineSession = Subsystem->GetSessionInterface();
+		if (OnlineSession.IsValid())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Found system interface"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found no subsystem"),);
+	}
 }
 
-void UPuzzlePlatformsGameInstance::LoadMenu()
+void UPuzzlePlatformsGameInstance::LoadMenuWidget()
 {
 	if (!ensure(MenuClass != nullptr))
 		return;
@@ -50,7 +67,7 @@ void UPuzzlePlatformsGameInstance::LoadMenu()
 	
 }
 
-void UPuzzlePlatformsGameInstance::LoadIngameMenu()
+void UPuzzlePlatformsGameInstance::LoadIngameMenuWidget()
 {
 	if (!ensure(IngameMenuClass != nullptr))
 		return;
