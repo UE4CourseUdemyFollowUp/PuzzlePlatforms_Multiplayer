@@ -7,7 +7,19 @@
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableTextBox.h"
 #include "Engine/World.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Public/MenuSystem/ServerRow.h"
+#include "TextBlock.h"
 
+UMainMenu::UMainMenu(const FObjectInitializer & ObjectInitializer)
+{
+	ConstructorHelpers::FClassFinder<UUserWidget> ServerRowBPClass(TEXT("/Game/MenuSystem/WBP_ServerRow"));
+
+	if (!ensure(ServerRowBPClass.Class != nullptr))
+		return;
+
+	ServerRowClass = ServerRowBPClass.Class;
+}
 
 bool UMainMenu::Initialize()
 {
@@ -51,6 +63,11 @@ void UMainMenu::OpenJoinGameMenu()
 		return;
 	}
 	MenuSwitcher->SetActiveWidget(JoinMenu);
+
+	if (MenuInterface)
+	{
+		MenuInterface->RefreshServerList();
+	}
 }
 
 void UMainMenu::OpenMainMenu()
@@ -73,18 +90,44 @@ void UMainMenu::HostServer()
 	MenuInterface->HostServer();
 }
 
+void UMainMenu::SetServerList(TArray<FString> ServerNames)
+{
+	auto World = GetWorld();
+
+	if (!World)
+	{
+		return;
+	}
+
+	ScrollBox_ServerList->ClearChildren();
+
+	for (auto& ServerName : ServerNames)
+	{
+		UServerRow* ServerRow = CreateWidget<UServerRow>(World, ServerRowClass);
+
+		if (!ensure(ServerRow != nullptr))
+		{
+			return;
+		}
+
+		ServerRow->TextBlock_ServerName->SetText(FText::FromString(ServerName));
+		ScrollBox_ServerList->AddChild(ServerRow);
+	}
+}
+
 void UMainMenu::JoinServer()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
-	if (!EditableTextBox_IPAddress || !MenuInterface)
-		return;
+	//if (!EditableTextBox_IPAddress || !MenuInterface)
+	//	return;
 
-	const FString& IPAddress = EditableTextBox_IPAddress->GetText().ToString();
+	//const FString& IPAddress = EditableTextBox_IPAddress->GetText().ToString();
 
-	if (!IPAddress.IsEmpty())
-	{
-		MenuInterface->JoinGame(IPAddress);
-	}	
+	//if (!IPAddress.IsEmpty())
+	//{
+	MenuInterface->JoinGame("");
+	//}	
+
 }
 
 
