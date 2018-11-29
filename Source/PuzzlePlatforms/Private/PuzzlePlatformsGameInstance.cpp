@@ -47,12 +47,22 @@ void UPuzzlePlatformsGameInstance::Init()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Found system interface"));
 			OnlineSession->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnCreateSessionComplete);
-			OnlineSession->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnDestroySessionComplete);			
+			OnlineSession->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnDestroySessionComplete);		
+			OnlineSession->OnFindSessionsCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnFindSessionComplete);
+
+			
+			SessionSearch = MakeShareable(new FOnlineSessionSearch());
+			if (SessionSearch.IsValid())
+			{
+				SessionSearch->bIsLanQuery = true;
+				UE_LOG(LogTemp, Warning, TEXT("Sessin search started"));
+				OnlineSession->FindSessions(0, SessionSearch.ToSharedRef());
+			}			
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Found no subsystem"),);
+		UE_LOG(LogTemp, Warning, TEXT("Found no subsystem"));
 	}
 }
 
@@ -162,11 +172,29 @@ void UPuzzlePlatformsGameInstance::OnDestroySessionComplete(FName SessionName, b
 	}
 }
 
+void UPuzzlePlatformsGameInstance::OnFindSessionComplete(bool Success)
+{
+	if (Success && SessionSearch.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Sessin search eded"));
+
+		for (auto& result : SessionSearch->SearchResults)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Sessin found ID: %s"), *(result.GetSessionIdStr()));
+			
+		}
+	}
+}
+
 void UPuzzlePlatformsGameInstance::CreateSession()
 {
 	if (OnlineSession.IsValid())
 	{
 		FOnlineSessionSettings OnlineSessionSettings;
+		OnlineSessionSettings.bAllowInvites = true;
+		OnlineSessionSettings.bIsLANMatch = true;
+		OnlineSessionSettings.bShouldAdvertise = true;
+		OnlineSessionSettings.NumPublicConnections = 2;
 		OnlineSession->CreateSession(0, SESSION_NAME, OnlineSessionSettings);
 	}
 }
