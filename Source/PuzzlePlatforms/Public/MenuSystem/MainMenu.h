@@ -19,6 +19,8 @@ public:
 
 	void SetServerList(TArray<FString> ServerNames);
 
+	void SetIndex(uint32 Index);
+
 protected:
 	virtual bool Initialize() override;
 
@@ -73,4 +75,6 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UPanelWidget* ScrollBox_ServerList;
+
+	TOptional<uint32> SelectedIndex;
 };

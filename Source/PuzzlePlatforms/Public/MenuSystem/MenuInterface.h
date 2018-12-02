@@ -23,7 +23,7 @@ class PUZZLEPLATFORMS_API IMenuInterface
 public:
 	virtual void HostServer() = 0;
 
-	virtual void JoinGame( const FString& Address ) = 0;
+	virtual void JoinGame( const uint32& Index ) = 0;
 
 	virtual void LoadMainMenu() = 0;
 

@@ -101,6 +101,7 @@ void UMainMenu::SetServerList(TArray<FString> ServerNames)
 
 	ScrollBox_ServerList->ClearChildren();
 
+	uint32 Index = 0;
 	for (auto& ServerName : ServerNames)
 	{
 		UServerRow* ServerRow = CreateWidget<UServerRow>(World, ServerRowClass);
@@ -111,13 +112,23 @@ void UMainMenu::SetServerList(TArray<FString> ServerNames)
 		}
 
 		ServerRow->TextBlock_ServerName->SetText(FText::FromString(ServerName));
+		ServerRow->Setup(this, Index++);
 		ScrollBox_ServerList->AddChild(ServerRow);
 	}
+}
+
+void UMainMenu::SetIndex(uint32 Index)
+{
+	SelectedIndex = Index;
 }
 
 void UMainMenu::JoinServer()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
+	if (SelectedIndex.IsSet() && MenuInterface)
+	{
+		MenuInterface->JoinGame(SelectedIndex.GetValue());
+	}
 	//if (!EditableTextBox_IPAddress || !MenuInterface)
 	//	return;
 
@@ -125,7 +136,7 @@ void UMainMenu::JoinServer()
 
 	//if (!IPAddress.IsEmpty())
 	//{
-	MenuInterface->JoinGame("");
+	
 	//}	
 
 }

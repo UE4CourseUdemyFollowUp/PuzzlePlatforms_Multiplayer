@@ -4,7 +4,6 @@
 #include "Engine/Engine.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint/UserWidget.h"
-#include "OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
 
 #include "PlatformTrigger.h"
@@ -49,6 +48,7 @@ void UPuzzlePlatformsGameInstance::Init()
 			OnlineSession->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnCreateSessionComplete);
 			OnlineSession->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnDestroySessionComplete);		
 			OnlineSession->OnFindSessionsCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnFindSessionComplete);
+			OnlineSession->OnJoinSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnJoinSessionComplete);
 		}
 	}
 	else
@@ -101,20 +101,13 @@ void UPuzzlePlatformsGameInstance::HostServer()
 	}
 }
 
-void UPuzzlePlatformsGameInstance::JoinGame(const FString& Address)
+void UPuzzlePlatformsGameInstance::JoinGame(const uint32& Index)
 {
-	UEngine* Engine = GetEngine();
-	if (!ensure(Engine))
-		return;
-
-	Engine->AddOnScreenDebugMessage(0, 5.f, FColor::White, FString::Printf(TEXT("Joining %s ..."), *Address));
-
-	APlayerController* PlayerController = GetFirstLocalPlayerController();
-
-	if (!ensure(PlayerController))
-		return;
-
-	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
+	if (OnlineSession.IsValid() && SessionSearch.IsValid())
+	{
+		OnlineSession->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[Index]);
+	}
 }
 
 void UPuzzlePlatformsGameInstance::LoadMainMenu()
@@ -168,6 +161,7 @@ void UPuzzlePlatformsGameInstance::OnCreateSessionComplete(FName SessionName, bo
 
 void UPuzzlePlatformsGameInstance::OnDestroySessionComplete(FName SessionName, bool Success)
 {
+	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
 	if (Success)
 	{
 		CreateSession();
@@ -188,6 +182,33 @@ void UPuzzlePlatformsGameInstance::OnFindSessionComplete(bool Success)
 		}
 		MainMenu->SetServerList(ServerIDs);
 	}
+}
+
+void UPuzzlePlatformsGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
+{
+	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
+	if (!OnlineSession.IsValid() && !EOnJoinSessionCompleteResult::Type::Success)
+	{
+		return;
+	}
+
+	FString AddressURL;
+	if (!OnlineSession->GetResolvedConnectString(SESSION_NAME, AddressURL))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could not receive the session address"));
+		return;
+	}
+
+	UWorld* World = GetWorld();
+
+	if (World)
+	{
+		APlayerController* PlayerController = World->GetFirstPlayerController();
+		if (PlayerController)
+		{
+			PlayerController->ClientTravel(AddressURL, ETravelType::TRAVEL_Absolute);
+		}	
+	}	
 }
 
 void UPuzzlePlatformsGameInstance::CreateSession()
