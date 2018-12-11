@@ -1,0 +1,5 @@
+Server:
+"C:\Program Files\Epic Games\UE_4.17\Engine\Binaries\Win64\UE4Editor.exe" "P:\UE4projects\UEDevCourse\PuzzlePlatforms_Multiplayer\PuzzlePlatforms.uproject" /Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen -server -log
+
+Client:
+"C:\Program Files\Epic Games\UE_4.17\Engine\Binaries\Win64\UE4Editor.exe" "P:\UE4projects\UEDevCourse\PuzzlePlatforms_Multiplayer\PuzzlePlatforms.uproject" 127.0.0.1:7777 /Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap -game -log

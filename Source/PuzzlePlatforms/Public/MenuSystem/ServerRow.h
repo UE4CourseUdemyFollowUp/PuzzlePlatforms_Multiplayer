@@ -18,7 +18,16 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* TextBlock_ServerName;
 
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* TextBlock_HostName;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* TextBlock_PlayersCount;
+
 	void Setup(class UMainMenu* InParent, uint32 InIndex);
+
+	UPROPERTY(BlueprintReadOnly)
+	bool Selected;
 
 private:
 

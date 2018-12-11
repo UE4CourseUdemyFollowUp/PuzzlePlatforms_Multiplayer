@@ -126,7 +126,9 @@ void UPuzzlePlatformsGameInstance::RefreshServerList()
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	if (SessionSearch.IsValid())
 	{
-		SessionSearch->bIsLanQuery = true;
+		//SessionSearch->bIsLanQuery = true;
+		SessionSearch->MaxSearchResults = 1000;
+		SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Type::Equals);
 		UE_LOG(LogTemp, Warning, TEXT("Sessin search started"));
 		OnlineSession->FindSessions(0, SessionSearch.ToSharedRef());
 	}
@@ -174,11 +176,16 @@ void UPuzzlePlatformsGameInstance::OnFindSessionComplete(bool Success)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Sessin search eded"));
 
-		TArray<FString> ServerIDs;
+		TArray<FServerData> ServerIDs;
 		for (auto& result : SessionSearch->SearchResults)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Sessin found ID: %s"), *(result.GetSessionIdStr()));
-			ServerIDs.Add(result.GetSessionIdStr());			
+			FServerData ServerData;
+			ServerData.Name = result.GetSessionIdStr();
+			ServerData.MaxPlayers = result.Session.NumOpenPublicConnections;
+			ServerData.CurrentPlayers = result.Session.SessionSettings.NumPublicConnections;
+			ServerData.HostUsername = result.Session.OwningUserName;
+			ServerIDs.Add(ServerData);
 		}
 		MainMenu->SetServerList(ServerIDs);
 	}
@@ -216,10 +223,19 @@ void UPuzzlePlatformsGameInstance::CreateSession()
 	if (OnlineSession.IsValid())
 	{
 		FOnlineSessionSettings OnlineSessionSettings;
-		OnlineSessionSettings.bAllowInvites = true;
-		OnlineSessionSettings.bIsLANMatch = true;
+		if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL")
+		{
+			OnlineSessionSettings.bIsLANMatch = true;
+		}
+		else
+		{
+			OnlineSessionSettings.bIsLANMatch = false;
+		}
+
+		OnlineSessionSettings.bAllowInvites = true;		
 		OnlineSessionSettings.bShouldAdvertise = true;
 		OnlineSessionSettings.NumPublicConnections = 2;
+		OnlineSessionSettings.bUsesPresence = true;
 		OnlineSession->CreateSession(0, SESSION_NAME, OnlineSessionSettings);
 	}
 }

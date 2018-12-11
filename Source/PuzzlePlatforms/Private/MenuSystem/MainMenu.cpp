@@ -90,7 +90,7 @@ void UMainMenu::HostServer()
 	MenuInterface->HostServer();
 }
 
-void UMainMenu::SetServerList(TArray<FString> ServerNames)
+void UMainMenu::SetServerList(TArray<FServerData> ServersData)
 {
 	auto World = GetWorld();
 
@@ -102,7 +102,7 @@ void UMainMenu::SetServerList(TArray<FString> ServerNames)
 	ScrollBox_ServerList->ClearChildren();
 
 	uint32 Index = 0;
-	for (auto& ServerName : ServerNames)
+	for (auto& ServerData : ServersData)
 	{
 		UServerRow* ServerRow = CreateWidget<UServerRow>(World, ServerRowClass);
 
@@ -111,7 +111,10 @@ void UMainMenu::SetServerList(TArray<FString> ServerNames)
 			return;
 		}
 
-		ServerRow->TextBlock_ServerName->SetText(FText::FromString(ServerName));
+		//ServerRow->TextBlock_ServerName->SetText(FText::FromString(ServerData.Name));
+		//ServerRow->TextBlock_HostName->SetText(FText::FromString(ServerData.HostUsername));
+		ServerRow->TextBlock_PlayersCount->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers)));
+
 		ServerRow->Setup(this, Index++);
 		ScrollBox_ServerList->AddChild(ServerRow);
 	}
@@ -120,6 +123,7 @@ void UMainMenu::SetServerList(TArray<FString> ServerNames)
 void UMainMenu::SetIndex(uint32 Index)
 {
 	SelectedIndex = Index;
+	UpdateChildren();
 }
 
 void UMainMenu::JoinServer()
@@ -151,6 +155,24 @@ void UMainMenu::ExitGame()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
 	ExitGamePressed();
+}
+
+void UMainMenu::UpdateChildren()
+{
+	auto ChildrenCount = ScrollBox_ServerList->GetChildrenCount();
+	if (SelectedIndex.IsSet())
+	{
+		auto Index = SelectedIndex.GetValue();
+		for (int32 i = 0; i < ChildrenCount; i++)
+		{
+			UServerRow* Child = Cast<UServerRow>(ScrollBox_ServerList->GetChildAt(i));
+
+			if (Child)
+			{
+				Child->Selected = (Index == i);
+			}
+		}
+	}
 }
 
 
