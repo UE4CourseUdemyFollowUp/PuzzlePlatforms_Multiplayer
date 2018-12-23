@@ -43,6 +43,9 @@ private:
 	void OpenJoinGameMenu();
 
 	UFUNCTION()
+	void OpenHostGameMenu();
+
+	UFUNCTION()
 	void OpenMainMenu();
 
 	UFUNCTION()
@@ -58,10 +61,16 @@ private:
 	void ExitGame();
 	
 	UPROPERTY(meta = (BindWidget))
-	class UButton* Button_Host;
+	class UButton* Button_HostGame;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Button_JoinMenu;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Button_HostMenu;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Button_CanselHostMenu;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Button_JoinGame;
@@ -79,7 +88,13 @@ private:
 	class UWidgetSwitcher* MenuSwitcher;
 
 	UPROPERTY(meta = (BindWidget))
+	class UEditableTextBox* EditableTextBox_ServerName;
+
+	UPROPERTY(meta = (BindWidget))
 	class UWidget* JoinMenu;
+
+	UPROPERTY(meta = (BindWidget))
+	class UWidget* HostMenu;
 
 	UPROPERTY(meta = (BindWidget))
 	class UWidget* MainMenu;

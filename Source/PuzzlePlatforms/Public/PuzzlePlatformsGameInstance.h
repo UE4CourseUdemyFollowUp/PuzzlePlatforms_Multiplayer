@@ -30,7 +30,7 @@ public:
 	void LoadIngameMenuWidget();
 
 	UFUNCTION(Exec)
-	void HostServer() override;
+	void HostServer(FString ServerName) override;
 
 	UFUNCTION(Exec)
 	void JoinGame(const uint32& Index) override;
@@ -44,6 +44,8 @@ private:
 	TSubclassOf<class UMenuWidget> IngameMenuClass;
 	
 	class UMainMenu* MainMenu;
+
+	FString DesiredServerName;
 
 	IOnlineSessionPtr OnlineSession;
 

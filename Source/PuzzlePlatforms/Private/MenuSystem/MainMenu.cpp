@@ -28,13 +28,17 @@ bool UMainMenu::Initialize()
 	if (!ret)
 		return ret;
 
-	if (!Button_Host)
+	if (!Button_HostGame)
 		return false;
-	Button_Host->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
+	Button_HostGame->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
 
 	if (!Button_JoinMenu)
 		return false;
 	Button_JoinMenu->OnClicked.AddDynamic(this, &UMainMenu::OpenJoinGameMenu);
+
+	if (!Button_HostMenu)
+		return false;
+	Button_HostMenu->OnClicked.AddDynamic(this, &UMainMenu::OpenHostGameMenu);
 
 	if (!Button_JoinGame)
 		return false;
@@ -43,6 +47,10 @@ bool UMainMenu::Initialize()
 	if (!Button_CanselJoinMenu)
 		return false;
 	Button_CanselJoinMenu->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
+
+	if (!Button_CanselJoinMenu)
+		return false;
+	Button_CanselHostMenu->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
 
 	if (!Button_Settings)
 		return false;
@@ -70,6 +78,16 @@ void UMainMenu::OpenJoinGameMenu()
 	}
 }
 
+void UMainMenu::OpenHostGameMenu()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
+	if (!MenuSwitcher || !HostMenu)
+	{
+		return;
+	}
+	MenuSwitcher->SetActiveWidget(HostMenu);
+}
+
 void UMainMenu::OpenMainMenu()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
@@ -84,10 +102,11 @@ void UMainMenu::HostServer()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
 
-	if (!ensure(MenuInterface != nullptr))
+	if (!ensure((MenuInterface != nullptr) && (EditableTextBox_ServerName != nullptr)))
 		return;
 
-	MenuInterface->HostServer();
+	auto ServerName = EditableTextBox_ServerName->Text.ToString();
+	MenuInterface->HostServer(ServerName);
 }
 
 void UMainMenu::SetServerList(TArray<FServerData> ServersData)
@@ -111,8 +130,8 @@ void UMainMenu::SetServerList(TArray<FServerData> ServersData)
 			return;
 		}
 
-		//ServerRow->TextBlock_ServerName->SetText(FText::FromString(ServerData.Name));
-		//ServerRow->TextBlock_HostName->SetText(FText::FromString(ServerData.HostUsername));
+		ServerRow->TextBlock_ServerName->SetText(FText::FromString(ServerData.Name));
+		ServerRow->TextBlock_HostName->SetText(FText::FromString(ServerData.HostUsername));
 		ServerRow->TextBlock_PlayersCount->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers)));
 
 		ServerRow->Setup(this, Index++);
@@ -133,16 +152,6 @@ void UMainMenu::JoinServer()
 	{
 		MenuInterface->JoinGame(SelectedIndex.GetValue());
 	}
-	//if (!EditableTextBox_IPAddress || !MenuInterface)
-	//	return;
-
-	//const FString& IPAddress = EditableTextBox_IPAddress->GetText().ToString();
-
-	//if (!IPAddress.IsEmpty())
-	//{
-	
-	//}	
-
 }
 
 
