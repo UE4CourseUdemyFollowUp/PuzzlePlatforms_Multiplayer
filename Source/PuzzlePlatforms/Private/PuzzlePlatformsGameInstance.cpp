@@ -10,7 +10,7 @@
 #include "MenuSystem/MainMenu.h"
 #include "MenuSystem/MenuWidget.h"
 
-const static FName SESSION_NAME = TEXT("My Session");
+const static FName SESSION_NAME = TEXT("Game"/*NAME_GameSession*/);
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
@@ -93,9 +93,9 @@ void UPuzzlePlatformsGameInstance::HostServer(FString ServerName)
 
 	if (OnlineSession.IsValid())
 	{
-		if (OnlineSession->GetNamedSession(SESSION_NAME))
+		if (OnlineSession->GetNamedSession(SESSION_NAME/*NAME_GameSession*/))
 		{
-			OnlineSession->DestroySession(SESSION_NAME);
+			OnlineSession->DestroySession(SESSION_NAME/*NAME_GameSession*/);
 		}
 		else
 		{
@@ -109,7 +109,7 @@ void UPuzzlePlatformsGameInstance::JoinGame(const uint32& Index)
 	UE_LOG(LogTemp, Warning, TEXT("[%s]"), *FString(__FUNCTION__));
 	if (OnlineSession.IsValid() && SessionSearch.IsValid())
 	{
-		OnlineSession->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[Index]);
+		OnlineSession->JoinSession(0, SESSION_NAME/*NAME_GameSession*/, SessionSearch->SearchResults[Index]);
 	}
 }
 
@@ -185,8 +185,8 @@ void UPuzzlePlatformsGameInstance::OnFindSessionComplete(bool Success)
 			UE_LOG(LogTemp, Warning, TEXT("Sessin found ID: %s"), *(result.GetSessionIdStr()));
 			FServerData ServerData;
 			
-			ServerData.MaxPlayers = result.Session.NumOpenPublicConnections;
-			ServerData.CurrentPlayers = ServerData.MaxPlayers - result.Session.SessionSettings.NumPublicConnections;
+			ServerData.MaxPlayers = result.Session.SessionSettings.NumPublicConnections;
+			ServerData.CurrentPlayers = ServerData.MaxPlayers - result.Session.NumOpenPublicConnections;
 			ServerData.HostUsername = result.Session.OwningUserName;
 			
 			FString ServerName;
@@ -217,7 +217,7 @@ void UPuzzlePlatformsGameInstance::OnJoinSessionComplete(FName SessionName, EOnJ
 	}
 
 	FString AddressURL;
-	if (!OnlineSession->GetResolvedConnectString(SESSION_NAME, AddressURL))
+	if (!OnlineSession->GetResolvedConnectString(SESSION_NAME/*NAME_GameSession*/, AddressURL))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Could not receive the session address"));
 		return;
@@ -255,7 +255,7 @@ void UPuzzlePlatformsGameInstance::CreateSession()
 		OnlineSessionSettings.bUsesPresence = true;
 		OnlineSessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
-		OnlineSession->CreateSession(0, SESSION_NAME, OnlineSessionSettings);
+		OnlineSession->CreateSession(0, SESSION_NAME/*NAME_GameSession*/, OnlineSessionSettings);
 	}
 }
 
