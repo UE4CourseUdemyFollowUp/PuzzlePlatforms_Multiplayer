@@ -251,11 +251,19 @@ void UPuzzlePlatformsGameInstance::CreateSession()
 
 		OnlineSessionSettings.bAllowInvites = true;		
 		OnlineSessionSettings.bShouldAdvertise = true;
-		OnlineSessionSettings.NumPublicConnections = 2;
+		OnlineSessionSettings.NumPublicConnections = 5;
 		OnlineSessionSettings.bUsesPresence = true;
 		OnlineSessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 		OnlineSession->CreateSession(0, SESSION_NAME/*NAME_GameSession*/, OnlineSessionSettings);
+	}
+}
+
+void UPuzzlePlatformsGameInstance::StartSession()
+{
+	if (OnlineSession.IsValid())
+	{
+		OnlineSession->StartSession(SESSION_NAME);
 	}
 }
 

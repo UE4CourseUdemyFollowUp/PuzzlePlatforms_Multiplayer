@@ -39,6 +39,8 @@ public:
 
 	void RefreshServerList() override;
 
+	void StartSession();
+
 private:
 	TSubclassOf<class UUserWidget> MenuClass;
 	TSubclassOf<class UMenuWidget> IngameMenuClass;
@@ -57,4 +59,5 @@ private:
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 
 	void CreateSession();
+	
 };
